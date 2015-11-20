@@ -22,8 +22,7 @@
     </root>
 
     <!-- list of logger prefixes with non-default logging levels -->
-    <logger name="org.springframework" level="info"/>
-    <logger name="org.apache.http.client" level="error"/>
+    <logger name="org.springframework" level="debug"/>
     <logger name="cz.muni.ics.oauth" level="debug"/>
 
 

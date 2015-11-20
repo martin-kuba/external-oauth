@@ -3,6 +3,7 @@ package cz.muni.ics.oauth;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Register this application at  https://www.linkedin.com/secure/developer
@@ -31,13 +32,13 @@ public class LinkedInServlet extends BaseOAuthServlet {
         return "https://www.linkedin.com/uas/oauth2/accessToken";
     }
 
-    protected String getUserInfoURL(String token) {
+    protected String getUserInfoURL(String token, HttpServletRequest req) {
         return "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,picture-url)?format=json&oauth2_access_token=" + urlEncode(token);
     }
 
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData) {
+    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
 
         //{"emailAddress":"makub@ics.muni.cz","firstName":"Martin","id":"GQ83M3GKek","lastName":"Kuba","pictureUrl":"https://media.licdn.com/mpr/mprx/0_KMzyHnGFxm1-2PWo-yB_HzC5xu5K2P4o-R3iHztv8Wl81cfEpxLKQv6UlGL77NJ6lscCFt8d-s0N"}
         String userId = userData.path("id").asText();

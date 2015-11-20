@@ -3,6 +3,7 @@ package cz.muni.ics.oauth;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * A servlet for OAuth2 login using Google account.
@@ -32,12 +33,12 @@ public class GoogleServlet extends BaseOAuthServlet {
         return "https://accounts.google.com/o/oauth2/token";
     }
 
-    protected String getUserInfoURL(String token) {
+    protected String getUserInfoURL(String token, HttpServletRequest req) {
         return "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + urlEncode(token);
     }
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData) {
+    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
         //{"id":"111085807076049784065","email":"martinkuba@gmail.com","verified_email":true,"name":"Martin Kuba","given_name":"Martin","family_name":"Kuba","link":"https://plus.google.com/111085807076049784065","picture":"https://lh6.googleusercontent.com/-xhJABfSEk7o/AAAAAAAAAAI/AAAAAAAAARY/F6FG931irCk/photo.jpg","gender":"male","locale":"cs"}
         String userId = userData.path("id").asText();
         String userEmail = userData.path("email").asText();
