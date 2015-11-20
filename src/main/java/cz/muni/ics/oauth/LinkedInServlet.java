@@ -38,7 +38,7 @@ public class LinkedInServlet extends BaseOAuthServlet {
 
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
+    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) {
 
         //{"emailAddress":"makub@ics.muni.cz","firstName":"Martin","id":"GQ83M3GKek","lastName":"Kuba","pictureUrl":"https://media.licdn.com/mpr/mprx/0_KMzyHnGFxm1-2PWo-yB_HzC5xu5K2P4o-R3iHztv8Wl81cfEpxLKQv6UlGL77NJ6lscCFt8d-s0N"}
         String userId = userData.path("id").asText();

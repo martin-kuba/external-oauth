@@ -38,7 +38,7 @@ public class GoogleServlet extends BaseOAuthServlet {
     }
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
+    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) {
         //{"id":"111085807076049784065","email":"martinkuba@gmail.com","verified_email":true,"name":"Martin Kuba","given_name":"Martin","family_name":"Kuba","link":"https://plus.google.com/111085807076049784065","picture":"https://lh6.googleusercontent.com/-xhJABfSEk7o/AAAAAAAAAAI/AAAAAAAAARY/F6FG931irCk/photo.jpg","gender":"male","locale":"cs"}
         String userId = userData.path("id").asText();
         String userEmail = userData.path("email").asText();

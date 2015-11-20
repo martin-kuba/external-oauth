@@ -53,7 +53,7 @@ public class OrcidServlet extends BaseOAuthServlet {
     }
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
+    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) {
         JsonNode orcid_bio = userData.path("orcid-profile").path("orcid-bio");
 
         String userId = req.getAttribute("orcid").toString();

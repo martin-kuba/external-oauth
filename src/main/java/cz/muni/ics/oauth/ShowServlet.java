@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created with IntelliJ IDEA.
+ * Just forwards request to a JSP.
  *
  * @author Martin Kuba makub@ics.muni.cz
  */

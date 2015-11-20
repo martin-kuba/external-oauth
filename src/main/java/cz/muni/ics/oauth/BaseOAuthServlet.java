@@ -42,7 +42,7 @@ public abstract class BaseOAuthServlet extends HttpServlet {
 
     protected abstract String getUserInfoURL(String token, HttpServletRequest req);
 
-    protected abstract UserInfo getUserInfo(JsonNode userData, HttpServletRequest req);
+    protected abstract UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req);
 
     protected String client_id;
     protected String client_secret;
@@ -89,17 +89,15 @@ public abstract class BaseOAuthServlet extends HttpServlet {
             JsonNode tokenResponse = exchangeCodeForToken(code);
             log.debug("received access token response: {}", tokenResponse);
             String accessToken = tokenResponse.path("access_token").asText();
-            String expires = tokenResponse.path("expires_in").asText();
             this.tokenResponseHook(tokenResponse, req);
-            log.debug("received accessToken {}, it expires in {} seconds", accessToken, expires);
+            log.debug("received accessToken {}", accessToken);
 
             //use token for getting user data
             log.debug("using accessToken to read user data");
-            RestTemplate restTemplate2 = new RestTemplate();
-            JsonNode userData = restTemplate2.getForObject(getUserInfoURL(accessToken, req), JsonNode.class);
+            JsonNode userData = getForObject(getUserInfoURL(accessToken, req));
             log.debug("user data: {}", userData);
 
-            UserInfo userInfo = getUserInfo(userData, req);
+            UserInfo userInfo = getUserInfo(userData, accessToken, req);
             log.info("got user {}", userInfo);
             //store it
             session.setAttribute(USER, userInfo);
@@ -160,5 +158,11 @@ public abstract class BaseOAuthServlet extends HttpServlet {
         } catch (UnsupportedEncodingException e) {
             throw new Error("utf-8 unknown", e);
         }
+    }
+
+    protected JsonNode getForObject(String url) {
+        JsonNode response = new RestTemplate().getForObject(url, JsonNode.class);
+        log.debug("getForObject() response={}",response);
+        return response;
     }
 }

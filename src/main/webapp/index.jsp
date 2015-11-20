@@ -15,6 +15,7 @@
         <p><my:a class="btn btn-lg btn-default" href="/facebook/login">Facebook</my:a></p>
         <p><my:a class="btn btn-lg btn-default" href="/linkedin/login">LinkedIn</my:a></p>
         <p><my:a class="btn btn-lg btn-default" href="/orcid/login">OrdID</my:a></p>
+        <p><my:a class="btn btn-lg btn-default" href="/github/login">GitHub</my:a></p>
 
 
     </div>

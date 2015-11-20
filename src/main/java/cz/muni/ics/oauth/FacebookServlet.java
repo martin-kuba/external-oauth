@@ -39,7 +39,7 @@ public class FacebookServlet extends BaseOAuthServlet {
 
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData, HttpServletRequest req) {
+    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) {
         //{"id":"10208661916370953","email":"makub@ics.muni.cz","first_name":"Martin","gender":"male","last_name":"Kuba","link":"https://www.facebook.com/app_scoped_user_id/10208661916370953/","locale":"cs_CZ","name":"Martin Kuba","timezone":1,"updated_time":"2015-08-31T14:18:31+0000","verified":true}
         String userId = userData.path("id").asText();
         String userEmail = userData.path("email").asText();
