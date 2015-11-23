@@ -3,11 +3,6 @@ package cz.muni.ics.oauth;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -42,7 +39,7 @@ public abstract class BaseOAuthServlet extends HttpServlet {
 
     protected abstract String getUserInfoURL(String token, HttpServletRequest req);
 
-    protected abstract UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req);
+    protected abstract UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) throws IOException;
 
     protected String client_id;
     protected String client_secret;
@@ -106,24 +103,15 @@ public abstract class BaseOAuthServlet extends HttpServlet {
         }
     }
 
-    protected JsonNode exchangeCodeForToken(String code) {
+    protected JsonNode exchangeCodeForToken(String code) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.set("client_id", client_id);
-        map.set("client_secret", client_secret);
-        map.set("redirect_uri", redirect_uri);
-        map.set("code", code);
-        map.set("grant_type", "authorization_code");
-        try {
-            return restTemplate.postForObject(getTokenURL(), map, JsonNode.class);
-        } catch (HttpClientErrorException ex) {
-            log.error("HttpClientErrorException - HTTP POST failed", ex);
-            log.error("response body: {}", ex.getResponseBodyAsString());
-            throw ex;
-        } catch (RestClientException ex) {
-            log.error("RestClientException - HTTP POST failed", ex);
-            throw ex;
-        }
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("client_id", client_id);
+        map.put("client_secret", client_secret);
+        map.put("redirect_uri", redirect_uri);
+        map.put("code", code);
+        map.put("grant_type", "authorization_code");
+        return restTemplate.postForObjectForm(getTokenURL(), map, JsonNode.class);
     }
 
     protected void tokenResponseHook(JsonNode tokenResponse, HttpServletRequest req) {
@@ -160,7 +148,7 @@ public abstract class BaseOAuthServlet extends HttpServlet {
         }
     }
 
-    protected JsonNode getForObject(String url) {
+    protected JsonNode getForObject(String url) throws IOException {
         JsonNode response = new RestTemplate().getForObject(url, JsonNode.class);
         log.debug("getForObject() response={}",response);
         return response;

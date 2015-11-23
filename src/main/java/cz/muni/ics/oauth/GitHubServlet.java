@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * GitHub OAuth. https://developer.github.com/v3/oauth/
- *
+ * Register new at https://github.com/settings/applications/new
  * @author Martin Kuba makub@ics.muni.cz
  */
 @WebServlet("/github/*")
@@ -38,7 +39,7 @@ public class GitHubServlet extends BaseOAuthServlet {
     }
 
     @Override
-    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) {
+    protected UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req) throws IOException {
         String userId = userData.path("id").asText();
 
         String givenName = null;
