@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 public class LinkedInServlet extends BaseOAuthServlet {
 
     @Override
-    protected String getPrefix() {
+    protected String getProviderPrefix() {
         return "linkedin";
     }
 
     protected String getLoginURL() {
-        return "https://www.linkedin.com/uas/oauth2/authorization";
+        return "https://www.linkedin.com/oauth/v2/authorization";
     }
 
     protected String getScope() {
@@ -29,11 +29,11 @@ public class LinkedInServlet extends BaseOAuthServlet {
     }
 
     protected String getTokenURL() {
-        return "https://www.linkedin.com/uas/oauth2/accessToken";
+        return "https://www.linkedin.com/oauth/v2/accessToken";
     }
 
-    protected String getUserInfoURL(String token, HttpServletRequest req) {
-        return "https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,picture-url)?format=json&oauth2_access_token=" + urlEncode(token);
+    protected String getUserInfoURL(HttpServletRequest req) {
+        return "https://api.linkedin.com/v1/people/~?format=json";
     }
 
 
@@ -46,7 +46,7 @@ public class LinkedInServlet extends BaseOAuthServlet {
         String givenName = userData.path("firstName").asText();
         String surname = userData.path("lastName").asText();
         String userPicture = userData.path("pictureUrl").asText();
-        return new UserInfo(getPrefix(), userId, userEmail, givenName, surname, givenName + " " + surname, userPicture);
+        return new UserInfo(getProviderPrefix(), userId, userEmail, givenName, surname, givenName + " " + surname, userPicture);
     }
 
 }

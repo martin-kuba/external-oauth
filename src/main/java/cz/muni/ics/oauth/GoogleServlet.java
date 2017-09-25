@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public class GoogleServlet extends BaseOAuthServlet {
 
     @Override
-    protected String getPrefix() {
+    protected String getProviderPrefix() {
         return "google";
     }
 
@@ -33,8 +33,8 @@ public class GoogleServlet extends BaseOAuthServlet {
         return "https://accounts.google.com/o/oauth2/token";
     }
 
-    protected String getUserInfoURL(String token, HttpServletRequest req) {
-        return "https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + urlEncode(token);
+    protected String getUserInfoURL(HttpServletRequest req) {
+        return "https://www.googleapis.com/oauth2/v2/userinfo";
     }
 
     @Override

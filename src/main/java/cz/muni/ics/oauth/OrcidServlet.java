@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 public class OrcidServlet extends BaseOAuthServlet {
 
     @Override
-    protected String getPrefix() {
+    protected String getProviderPrefix() {
         return "orcid";
     }
 
@@ -47,7 +47,7 @@ public class OrcidServlet extends BaseOAuthServlet {
     }
 
     @Override
-    protected String getUserInfoURL(String token, HttpServletRequest req) {
+    protected String getUserInfoURL(HttpServletRequest req) {
         // http://members.orcid.org/api/tutorial-retrieve-data-public-api-curl-12-and-earlier
         return "http://pub.orcid.org/v1.2/"+ req.getAttribute("orcid");
     }

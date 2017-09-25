@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public class FacebookServlet extends BaseOAuthServlet {
 
     @Override
-    protected String getPrefix() {
+    protected String getProviderPrefix() {
         return "facebook";
     }
 
@@ -33,8 +33,8 @@ public class FacebookServlet extends BaseOAuthServlet {
         return "https://graph.facebook.com/v2.3/oauth/access_token";
     }
 
-    protected String getUserInfoURL(String token, HttpServletRequest req) {
-        return "https://graph.facebook.com/me?access_token=" + urlEncode(token);
+    protected String getUserInfoURL(HttpServletRequest req) {
+        return "https://graph.facebook.com/me";
     }
 
 

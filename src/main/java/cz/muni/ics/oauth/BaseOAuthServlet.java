@@ -3,6 +3,11 @@ package cz.muni.ics.oauth;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -17,6 +22,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Random;
 
@@ -27,12 +33,13 @@ import java.util.Random;
  */
 public abstract class BaseOAuthServlet extends HttpServlet {
 
-    final static Logger log = LoggerFactory.getLogger(BaseOAuthServlet.class);
+    private final static Logger log = LoggerFactory.getLogger(BaseOAuthServlet.class);
 
-    public static final String USER = "user";
+    private static final String USER = "user";
 
+    private Properties properties = new Properties();
 
-    protected abstract String getPrefix();
+    protected abstract String getProviderPrefix();
 
     protected abstract String getLoginURL();
 
@@ -40,13 +47,13 @@ public abstract class BaseOAuthServlet extends HttpServlet {
 
     protected abstract String getTokenURL();
 
-    protected abstract String getUserInfoURL(String token, HttpServletRequest req);
+    protected abstract String getUserInfoURL(HttpServletRequest req);
 
     protected abstract UserInfo getUserInfo(JsonNode userData, String token, HttpServletRequest req);
 
-    protected String client_id;
-    protected String client_secret;
-    protected String redirect_uri;
+    private String client_id;
+    private String client_secret;
+    private String redirect_uri;
 
 
     @Override
@@ -94,7 +101,8 @@ public abstract class BaseOAuthServlet extends HttpServlet {
 
             //use token for getting user data
             log.debug("using accessToken to read user data");
-            JsonNode userData = getForObject(getUserInfoURL(accessToken, req));
+            String userInfoURL = getUserInfoURL(req);
+            JsonNode userData = callUserInfoEndpoint(accessToken, userInfoURL);
             log.debug("user data: {}", userData);
 
             UserInfo userInfo = getUserInfo(userData, accessToken, req);
@@ -106,7 +114,7 @@ public abstract class BaseOAuthServlet extends HttpServlet {
         }
     }
 
-    protected JsonNode exchangeCodeForToken(String code) {
+    private JsonNode exchangeCodeForToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.set("client_id", client_id);
@@ -131,8 +139,8 @@ public abstract class BaseOAuthServlet extends HttpServlet {
 
     private Random random = new Random();
 
-    private static String getProperty(Properties p, String name) throws ServletException {
-        String value = p.getProperty(name);
+    String getProperty(String name) throws ServletException {
+        String value = properties.getProperty(name);
         if (value == null) throw new ServletException("property " + name + " not defined in config.properties");
         return value;
     }
@@ -140,19 +148,18 @@ public abstract class BaseOAuthServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         try {
-            Properties p = new Properties();
-            p.load(this.getClass().getResourceAsStream("/config.properties"));
-            String prefix = this.getPrefix();
-            client_id = getProperty(p, prefix + ".client_id");
-            client_secret = getProperty(p, prefix + ".client_secret");
-            String url_prefix = getProperty(p, "url.prefix");
-            redirect_uri = url_prefix + getPrefix() + "/auth";
+            properties.load(this.getClass().getResourceAsStream("/config.properties"));
+            String prefix = this.getProviderPrefix();
+            client_id = getProperty(prefix + ".client_id");
+            client_secret = getProperty(prefix + ".client_secret");
+            String url_prefix = getProperty("url.prefix");
+            redirect_uri = url_prefix + getProviderPrefix() + "/auth";
         } catch (IOException e) {
             throw new ServletException("cannot read file config.properties", e);
         }
     }
 
-    public static String urlEncode(String s) {
+    static String urlEncode(String s) {
         try {
             return URLEncoder.encode(s, "utf-8");
         } catch (UnsupportedEncodingException e) {
@@ -160,7 +167,16 @@ public abstract class BaseOAuthServlet extends HttpServlet {
         }
     }
 
-    protected JsonNode getForObject(String url) {
+    private JsonNode callUserInfoEndpoint(String accessToken, String userInfoURL) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set("Authorization","Bearer "+accessToken);
+        ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(userInfoURL, HttpMethod.GET, new HttpEntity<String>(headers), JsonNode.class);
+        return responseEntity.getBody();
+    }
+
+    JsonNode getForObject(String url) {
         JsonNode response = new RestTemplate().getForObject(url, JsonNode.class);
         log.debug("getForObject() response={}",response);
         return response;

@@ -17,6 +17,9 @@
         <p><my:a class="btn btn-lg btn-default" href="/orcid/login">OrdID</my:a></p>
         <p><my:a class="btn btn-lg btn-default" href="/github/login">GitHub</my:a></p>
 
+        <p><my:a class="btn btn-lg btn-default" href="/oidc_google/login">OpenID Connect Google</my:a></p>
+        <p><my:a class="btn btn-lg btn-default" href="/oidc_ms/login">OpenID Connect Microsoft</my:a></p>
+        <p><my:a class="btn btn-lg btn-default" href="/oidc_mitreid/login">OpenID Connect MitreID</my:a></p>
 
     </div>
 

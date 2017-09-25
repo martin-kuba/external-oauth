@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 @WebServlet("/github/*")
 public class GitHubServlet extends BaseOAuthServlet {
     @Override
-    protected String getPrefix() {
+    protected String getProviderPrefix() {
         return "github";
     }
 
@@ -33,8 +33,8 @@ public class GitHubServlet extends BaseOAuthServlet {
     }
 
     @Override
-    protected String getUserInfoURL(String token, HttpServletRequest req) {
-        return "https://api.github.com/user?access_token="+urlEncode(token);
+    protected String getUserInfoURL(HttpServletRequest req) {
+        return "https://api.github.com/user";
     }
 
     @Override
